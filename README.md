@@ -17,7 +17,7 @@ go get github.com/pipa/ober
 
 ## Usage example
 
-```
+```Go
 package main
 
 import (
