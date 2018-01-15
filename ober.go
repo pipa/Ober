@@ -11,6 +11,7 @@ import (
 )
 
 type (
+	// Main type for package
 	Ober struct {
 		Middleware *Middleware
 		Server     *http.Server
@@ -18,25 +19,29 @@ type (
 		Listener   net.Listener
 
 		DisableHTTP2 bool
-		Debug        bool
-		HideBanner   bool
-		HidePort     bool
 
 		router *mux.Router
-		routes map[string]*Route
-	}
-
-	HandlerFunc func() error
-
-	Route struct {
-		Method string `json:"method"`
-		Path   string `json:"path"`
-		Name   string `json:"name"`
 	}
 )
 
+// Functional Options ===========================
+// Options to disable HTTP2 protocol since using TLS will
+// transparently set the http2 protocol on by default
+func DisableHTTP2(disableHTTP2 bool) func(*Ober) {
+	return func(o *Ober) {
+		o.DisableHTTP2 = disableHTTP2
+	}
+}
+
+// Router? ======================================
+// Adds a new route...will change this
+func (o *Ober) Add(path string, handler http.HandlerFunc) {
+	o.router.HandleFunc(path, handler)
+}
+
+// Server Methods ===============================
 // New creates an instance of Ober.
-func New() (o *Ober) {
+func New(options ...func(*Ober)) (o *Ober) {
 	o = &Ober{
 		Middleware:   new(Middleware),
 		Server:       new(http.Server),
@@ -44,16 +49,15 @@ func New() (o *Ober) {
 		DisableHTTP2: false,
 	}
 
+	for _, option := range options {
+		option(o)
+	}
+
 	o.Logger.Formatter = &logrus.JSONFormatter{}
 	o.Server.Handler = o
 	o.router = mux.NewRouter()
 
-	return
-}
-
-// Adds a new route...will change this
-func (o *Ober) Add(path string, handler http.HandlerFunc) {
-	o.router.HandleFunc(path, handler)
+	return o
 }
 
 // Start starts an HTTPs server.

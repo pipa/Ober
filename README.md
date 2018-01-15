@@ -21,26 +21,26 @@ go get github.com/pipa/ober
 package main
 
 import (
-	"fmt"
-	"net/http"
+  "fmt"
+  "net/http"
 
-	"github.com/pipa/ober"
+  "github.com/pipa/ober"
 )
 
 func main() {
-	e := ober.New()
-	e.Middleware.Add(test)
+  e := ober.New()
+  e.Middleware.Add(test)
   e.Middleware.Add(test) // twice...
-	e.Add("/", index)
-	e.Logger.Fatal(e.Start(":9999", "docs/certs/selfsigned.crt", "docs/certs/selfsigned.key")) // Only works with TLS
+  e.Add("/", index)
+  e.Logger.Fatal(e.Start(":9999", "docs/certs/selfsigned.crt", "docs/certs/selfsigned.key")) // Only works with TLS
 }
 
 func test(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("I'll get printed")
+  fmt.Println("I'll get printed")
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello Luis")
+  fmt.Fprintf(w, "Hello Luis")
 }
 ```
 
@@ -53,9 +53,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 Luis Matute – [@luis_matute](https://twitter.com/luis_matute)
 
-Distributed under the MIT license. See ``LICENSE`` for more information.
+Distributed under the MIT license. See ``[LICENSE](https://github.com/pipa/Ober/blob/master/LICENSE)`` for more information.
 
-[https://github.com/pipa](https://github.com/pipa/)
 
 ## Contributing
 
