@@ -1,6 +1,7 @@
 package ober
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"net"
@@ -13,15 +14,19 @@ import (
 type (
 	// Main type for package
 	Ober struct {
-		Middleware *Middleware
+		Middleware *MW
 		Server     *http.Server
 		Logger     *logrus.Logger
 		Listener   net.Listener
 
 		DisableHTTP2 bool
 
-		router *mux.Router
+		ctx        context.Context
+		router     *mux.Router
+		middleware []Middleware
 	}
+
+	Middleware func(http.Handler) http.Handler
 )
 
 // Functional Options ===========================
@@ -33,20 +38,26 @@ func DisableHTTP2(disableHTTP2 bool) func(*Ober) {
 	}
 }
 
+// Middleware ===================================
+func (o *Ober) Use(middleware ...Middleware) {
+	o.middleware = append(o.middleware, middleware...)
+}
+
 // Router? ======================================
 // Adds a new route...will change this
-func (o *Ober) Add(path string, handler http.HandlerFunc) {
-	o.router.HandleFunc(path, handler)
+func (o *Ober) Add(path string, handler http.Handler) {
+	o.router.Handle(path, handler)
 }
 
 // Server Methods ===============================
 // New creates an instance of Ober.
 func New(options ...func(*Ober)) (o *Ober) {
 	o = &Ober{
-		Middleware:   new(Middleware),
+		Middleware:   new(MW),
 		Server:       new(http.Server),
 		Logger:       logrus.New(),
 		DisableHTTP2: false,
+		ctx:          context.Background(),
 	}
 
 	for _, option := range options {
@@ -90,9 +101,10 @@ func (o *Ober) Start(address string, certFile, keyFile string) (err error) {
 
 // ServeHTTP implements `http.Handler` interface, which serves HTTP requests.
 func (o *Ober) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// o.Logger.Println("hello")
-	for _, h := range o.Middleware.handlers {
-		h.ServeHTTP(w, r)
+	// o.Logger.Printf("%v", o.ctx)
+	r = r.WithContext(o.ctx)
+	for _, h := range o.middleware {
+		h(r).ServeHTTP(w, r)
 	}
 
 	o.router.ServeHTTP(w, r)

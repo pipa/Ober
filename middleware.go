@@ -5,28 +5,22 @@ import (
 )
 
 // Main strcut used to configure and access functionality
-type Middleware struct {
-	mux      http.Handler
-	handlers []http.HandlerFunc
+type MW struct {
+	handlers []http.Handler
 }
 
 // Inits a new middleware chain.
-func (m *Middleware) New() *Middleware {
-	return &Middleware{handlers: make([]http.HandlerFunc, 0, 0)}
+func (m *MW) New() *MW {
+	return &MW{handlers: make([]http.Handler, 0, 0)}
 }
 
-// Add middleware to handlers slice of HandlerFunc
-func (m *Middleware) Add(h ...http.HandlerFunc) {
+// Add middleware to handlers slice of Handler
+func (m *MW) Add(h ...http.Handler) {
 	m.handlers = append(m.handlers, h...)
 }
 
-// AddMux adds our mux to run.
-func (m *Middleware) AddMux(mux http.Handler) {
-	m.mux = mux
-}
-
 // So we can satisfy the http.Handler interface.
-// func (m *Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// func (m *MW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // 	for _, h := range m.handlers {
 // 		h.ServeHTTP(w, r)
 // 	}
