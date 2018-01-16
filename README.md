@@ -28,13 +28,13 @@ import (
 )
 
 func main() {
-  e := ober.New(
+  s := ober.New(
     ober.Address(":8888"),                      // Required
     ober.CertFile("docs/certs/selfsigned.crt"), // Required TLS cert
     ober.KeyFile("docs/certs/selfsigned.key"),  // Required TLS key
   )
-  e.Add("/", index) // Add Route
-  e.Logger.Fatal(e.Start()) // I will only support TLS since its the norm nowadays
+  s.Add("/", index) // Add Route
+  s.Logger.Fatal(e.Start()) // I will only support TLS since its the norm nowadays
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
