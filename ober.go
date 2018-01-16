@@ -74,8 +74,8 @@ func (o *Ober) Use(middleware ...Middleware) {
 // Router? ======================================
 
 // Add a new route...will change this
-func (o *Ober) Add(path string, handler http.Handler) {
-	o.router.Handle(path, handler)
+func (o *Ober) Add(path string, handler http.HandlerFunc) {
+	o.router.HandleFunc(path, handler)
 }
 
 // Server Methods ===============================

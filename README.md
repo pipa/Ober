@@ -1,4 +1,4 @@
-# Ober
+# ober
 > GoLang framework
 
 <!-- [![NPM Version][npm-image]][npm-url]
@@ -28,19 +28,17 @@ import (
 )
 
 func main() {
-  e := ober.New()
-  e.Middleware.Add(test)
-  e.Middleware.Add(test) // twice...
-  e.Add("/", index)
-  e.Logger.Fatal(e.Start(":9999", "docs/certs/selfsigned.crt", "docs/certs/selfsigned.key")) // Only works with TLS
-}
-
-func test(w http.ResponseWriter, r *http.Request) {
-  fmt.Println("I'll get printed")
+  e := ober.New(
+		ober.Address(":8888"),                      // Required
+		ober.CertFile("docs/certs/selfsigned.crt"), // Required TLS cert
+		ober.KeyFile("docs/certs/selfsigned.key"),  // Required TLS key
+  )
+  e.Add("/", index) // Add Route
+	e.Logger.Fatal(e.Start()) // I will only support TLS since its the norm nowadays
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Hello Luis")
+	fmt.Fprintf(w, "Hello Luis")
 }
 ```
 
@@ -53,12 +51,12 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 Luis Matute – [@luis_matute](https://twitter.com/luis_matute)
 
-Distributed under the MIT license. See ``[LICENSE](https://github.com/pipa/Ober/blob/master/LICENSE)`` for more information.
+Distributed under the MIT license. See ``LICENSE`` for more information.
 
 
 ## Contributing
 
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
+1. Fork it (<https://github.com/pipa/ober/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
