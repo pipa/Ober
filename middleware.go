@@ -4,12 +4,12 @@ import (
 	"net/http"
 )
 
-// Main strcut used to configure and access functionality
+// MW middleware struct used to configure and access functionality
 type MW struct {
 	handlers []http.Handler
 }
 
-// Inits a new middleware chain.
+// New creates a new middleware chain.
 func (m *MW) New() *MW {
 	return &MW{handlers: make([]http.Handler, 0, 0)}
 }
